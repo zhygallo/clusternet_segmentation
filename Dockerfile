@@ -22,7 +22,7 @@ RUN /opt/conda/bin/conda install -c conda-forge tensorflow-gpu \
 
 RUN /opt/conda/bin/pip install sklearn pandas
 
-RUN export LC_ALL=C.UTF-8
-RUN export LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
 
 ENV PATH="/opt/conda/bin:${PATH}"
