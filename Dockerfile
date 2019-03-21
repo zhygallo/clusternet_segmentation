@@ -18,8 +18,7 @@ RUN apt-get update && \
 RUN /opt/conda/bin/conda install -c conda-forge tensorflow-gpu \
                                                 keras \
                                                 scikit-image \
-                                                click \
-                                                sklearn
+                                                click
 
 
 ENV PATH="/opt/conda/bin:${PATH}"
