@@ -20,6 +20,6 @@ RUN /opt/conda/bin/conda install -c conda-forge tensorflow-gpu \
                                                 scikit-image \
                                                 click
 
-RUN /opt/conda/bin/pip install sklearn
+RUN /opt/conda/bin/pip install sklearn pandas
 
 ENV PATH="/opt/conda/bin:${PATH}"
