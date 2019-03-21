@@ -4,7 +4,6 @@ ARG FAISS_CPU_OR_GPU=cpu
 ARG FAISS_VERSION=1.4.0
 
 ENV HOME /root
-WORKDIR $HOME/image_classifier_train
 
 RUN apt-get update && \
     apt-get install -y build-essential curl software-properties-common bzip2 python3-pip  && \
