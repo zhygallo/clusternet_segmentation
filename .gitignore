@@ -1,0 +1,17 @@
+*.pyc
+*.npy
+*.csv
+*.hdf5
+*.h5
+*.png
+*.json
+*.gz
+*.tar
+*.tif
+*.tiff
+*.shp
+*.xml
+*.jpg
+*.tfrecords
+*.JPEG
+data/*
