@@ -20,7 +20,14 @@ RUN /opt/conda/bin/conda install -c conda-forge tensorflow-gpu \
                                                 scikit-image \
                                                 click
 
-RUN /opt/conda/bin/pip install sklearn pandas
+RUN /opt/conda/bin/pip install sklearn \
+                                pandas \
+                                tensorboard==1.10.0 \
+                                tensorflow==1.10.1 \
+                                tensorlayer==1.10.1 \
+                                Keras==2.2.2 \
+                                Keras-Applications==1.0.6 \
+                                Keras-Preprocessing==1.0.5
 
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
