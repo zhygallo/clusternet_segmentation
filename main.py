@@ -71,6 +71,7 @@ def main(train_img_folder, test_img_folder, img_shape, num_clusters, num_epochs,
 
 
     test_image_generator = test_image_datagen.flow_from_directory(test_img_folder,
+                                                                  color_mode='grayscale',
                                                                   target_size=img_shape,
                                                                   batch_size=32,
                                                                   class_mode=None,

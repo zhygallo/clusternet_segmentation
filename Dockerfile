@@ -15,9 +15,12 @@ RUN apt-get update && \
     apt-get clean && \
     rm -fr /tmp/conda.sh
 
-COPY requirements.txt .
+RUN /opt/conda/bin/conda install -c conda-forge tensorflow-gpu \
+                                                keras \
+                                                scikit-image \
+                                                click
 
-RUN /opt/conda/bin/pip install -r requirements.txt
+RUN /opt/conda/bin/pip install sklearn pandas
 
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
