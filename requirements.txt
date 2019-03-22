@@ -14,8 +14,6 @@ decorator==4.3.0
 faiss==1.4.0
 Fiona==1.7.13
 gast==0.2.0
-GDAL==2.2.4
-geopandas==0.4.0
 grpcio==1.15.0
 h5py==2.8.0
 idna==2.7
