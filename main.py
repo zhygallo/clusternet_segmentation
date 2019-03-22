@@ -46,12 +46,13 @@ def main(train_img_folder, test_img_folder, img_shape, num_clusters, num_epochs,
         data_format='channels_last',
     )
 
-    # # (512, 512) lux
-    train_image_datagen.mean = np.array([11.4296465, 13.140564, 12.277675], dtype=np.float32).reshape(1, 1, 3)
-    train_image_datagen.std = np.array([27.561337, 29.903225, 29.525864], dtype=np.float32).reshape(1, 1, 3)
+    # (512, 512)
+    train_image_datagen.mean = np.array([30.17722], dtype='float32').reshape(1, 1, 1)
+    train_image_datagen.std = np.array([33.690296], dtype='float32').reshape(1, 1, 1)
 
     SEED = 1
     train_image_generator = train_image_datagen.flow_from_directory(train_img_folder,
+                                                                    color_mode='grayscale',
                                                                     target_size=img_shape,
                                                                     batch_size=clust_batch_size,
                                                                     class_mode=None,
