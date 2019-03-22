@@ -15,7 +15,9 @@ RUN apt-get update && \
     apt-get clean && \
     rm -fr /tmp/conda.sh
 
-RUN /opt/conda/bin/pip install sklearn pandas
+COPY requirements.txt .
+
+RUN /opt/conda/bin/pip install -r requirements.txt
 
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
