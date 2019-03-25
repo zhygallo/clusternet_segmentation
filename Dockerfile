@@ -24,9 +24,7 @@ RUN /opt/conda/bin/pip install sklearn \
                                 scikit-image \
                                 click \
                                 pandas \
-                                tensorboard==1.10.0 \
-                                tensorflow-gpu==1.10.0 \
-                                tensorlayer==1.10.0 \
+                                tensorflow-gpu==1.11.0 \
                                 Keras==2.2.2 \
                                 Keras-Applications==1.0.6 \
                                 Keras-Preprocessing==1.0.5
