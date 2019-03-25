@@ -1,4 +1,4 @@
-FROM nvidia/cuda:9.0-devel-ubuntu16.04
+FROM nvidia/cuda:9.0-cudnn7-devel-ubuntu16.04
 
 ARG FAISS_CPU_OR_GPU=cpu
 ARG FAISS_VERSION=1.4.0
