@@ -1,4 +1,4 @@
-FROM nvidia/cuda:8.0-cudnn6-devel-ubuntu16.04
+FROM nvidia/cuda:9.1-devel-ubuntu16.04
 
 ARG FAISS_CPU_OR_GPU=cpu
 ARG FAISS_VERSION=1.4.0
@@ -15,12 +15,14 @@ RUN apt-get update && \
     apt-get clean && \
     rm -fr /tmp/conda.sh
 
-RUN /opt/conda/bin/conda install -c conda-forge tensorflow-gpu \
-                                                keras \
-                                                scikit-image \
-                                                click
+#RUN /opt/conda/bin/conda install -c conda-forge tensorflow-gpu \
+#                                                keras \
+#                                                scikit-image \
+#                                                click
 
 RUN /opt/conda/bin/pip install sklearn \
+                                scikit-image \
+                                click \
                                 pandas \
                                 tensorboard==1.10.0 \
                                 tensorflow==1.10.1 \
