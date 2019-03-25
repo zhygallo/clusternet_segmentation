@@ -25,7 +25,7 @@ RUN /opt/conda/bin/pip install sklearn \
                                 click \
                                 pandas \
                                 tensorboard==1.10.0 \
-                                tensorflow==1.10.1 \
+                                tensorflow-gpu==1.10.1 \
                                 tensorlayer==1.10.1 \
                                 Keras==2.2.2 \
                                 Keras-Applications==1.0.6 \
