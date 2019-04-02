@@ -26,8 +26,8 @@ RUN /opt/conda/bin/pip install sklearn \
                                 pandas \
                                 tensorflow-gpu==1.11.0 \
                                 Keras==2.2.2 \
-                                Keras-Applications==1.0.6 \
-                                Keras-Preprocessing==1.0.5
+                                Keras-Applications==1.0.4 \
+                                Keras-Preprocessing==1.0.2
 
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8

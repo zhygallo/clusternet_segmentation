@@ -2,7 +2,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-
 import skimage.io
 import numpy as np
 from keras import Model
@@ -18,8 +17,8 @@ import skimage.io
 from models.UNetValid import get_model
 from utils import clustering
 
+img_path = '/home/zhygallo/zhygallo/zeiss/clusternet_segmentation/data/crop_img.png'
 
-img_path = '/home/zhygallo/zhygallo/inria/cluster_seg/deepcluster_segmentation/data/patches_512_lux/Pitt_crop_scale.jpg'
 
 class Paint(object):
 
@@ -32,7 +31,8 @@ class Paint(object):
         self.img = ImageTk.PhotoImage(image=img)
         frame = Frame(self.root, width=self.img.width(), height=self.img.height())
         frame.grid(row=1, columnspan=2)
-        self.canvas = Canvas(frame, bg='#FFFFFF', width=512, height=512, scrollregion=(0, 0, self.img.width(), self.img.height()))
+        self.canvas = Canvas(frame, bg='#FFFFFF', width=512, height=512,
+                             scrollregion=(0, 0, self.img.width(), self.img.height()))
         hbar = Scrollbar(frame, orient=HORIZONTAL)
         hbar.pack(side=BOTTOM, fill=X)
         hbar.config(command=self.canvas.xview)
@@ -68,15 +68,17 @@ class Paint(object):
         self.old_x = None
         self.old_y = None
 
-        self.num_clusters = 800
+        self.num_clusters = 100
 
-        model_weights_path = '/home/zhygallo/zhygallo/inria/cluster_seg/deepcluster_segmentation/data/patches_512_lux/pred_masks/35/model.h5'
-        img_path = '/home/zhygallo/zhygallo/inria/cluster_seg/deepcluster_segmentation/data/raw_data/luxcarta/dev_crop/images/Pittsburg_crop.tif'
+        model_weights_path = '/home/zhygallo/zhygallo/zeiss/clusternet_segmentation/data/results/38/model.h5'
+        img_path = '/home/zhygallo/zhygallo/zeiss/clusternet_segmentation/data/raw/test/images/JNCASR_Overall_Inducer_123_Folder_F_30_ebss_07_R3D_D3D_PRJ.png'
         self.image = skimage.io.imread(img_path).astype('float32')
+
+        self.image = np.expand_dims(self.image, -1)
         # mean = np.array([9.513245, 10.786118, 10.060172], dtype=np.float32).reshape(1, 1, 3)
         # std = np.array([18.76071, 19.97462, 19.616455], dtype=np.float32).reshape(1, 1, 3)
-        mean = np.array([11.4296465, 13.140564, 12.277675], dtype=np.float32).reshape(1, 1, 3)
-        std = np.array([27.561337, 29.903225, 29.525864], dtype=np.float32).reshape(1, 1, 3)
+        mean = np.array([30.17722], dtype='float32').reshape(1, 1, 1)
+        std = np.array([33.690296], dtype='float32').reshape(1, 1, 1)
         self.image -= mean
         self.image /= std
         # self.image /= 255
@@ -85,11 +87,12 @@ class Paint(object):
         self.model.load_weights(model_weights_path)
 
         before_last_layer_model = Model(inputs=self.model.input, outputs=self.model.get_layer('for_clust').output)
+
         self.x = before_last_layer_model.predict(np.expand_dims(self.image, axis=0), verbose=1, batch_size=1)
 
         self.pos_neg_mask = np.zeros((self.x.shape[1], self.x.shape[2]))
-        self.pos_neg_mask = np.load(
-            '/home/zhygallo/zhygallo/inria/cluster_seg/deepcluster_segmentation/data/patches_512_lux/pos_neg_mask.npy')
+        # self.pos_neg_mask = np.load(
+        #     '/home/zhygallo/zhygallo/inria/cluster_seg/deepcluster_segmentation/data/patches_512_lux/pos_neg_mask.npy')
         self.x_flat = np.reshape(self.x, (self.x.shape[0] * self.x.shape[1] * self.x.shape[2], self.x.shape[-1]))
 
         self.n_pix, self.dim_pix = self.x_flat.shape[0], self.x_flat.shape[1]
@@ -102,9 +105,9 @@ class Paint(object):
             masks_flat[clust] = clust_ind
         self.masks = masks_flat.reshape((self.x.shape[1], self.x.shape[2]))
 
-        self.count=1
+        self.count = 1
         skimage.io.imsave(
-            '/home/zhygallo/zhygallo/inria/cluster_seg/deepcluster_segmentation/data/patches_512_lux/full_pred/clust_%i.png' % self.count,
+            '/home/zhygallo/zhygallo/zeiss/clusternet_segmentation/data/binar_pred/clust_%i.png' % self.count,
             self.masks.astype('uint32'))
         self.subplot_mask.imshow(self.masks)
         self.canvas.create_image(0, 0, image=self.img, anchor=NW)
@@ -118,7 +121,7 @@ class Paint(object):
         self.active_button = some_button
 
     def paint(self, event):
-        self.line_width = 5.0
+        self.line_width = 3.0
         if self.pos_stroke.get():
             self.color = 'blue'
         else:
@@ -140,15 +143,16 @@ class Paint(object):
         self.old_x, self.old_y = None, None
 
     def done(self):
-        # np.save('/home/zhygallo/zhygallo/inria/cluster_seg/deepcluster_segmentation/data/patches_512_lux/pos_neg_mask_transfer.npy', self.pos_neg_mask)
+        np.save('/home/zhygallo/zhygallo/zeiss/clusternet_segmentation/data/pos_neg_mask_transfer.npy',
+                self.pos_neg_mask)
         pos_clusts = np.unique(self.masks[self.pos_neg_mask == 1])
         neg_clusts = np.unique(self.masks[self.pos_neg_mask == -1])
 
         intersect = np.intersect1d(pos_clusts, neg_clusts)
 
         for clust in intersect:
-            pos = np.sum((self.masks==clust) * (self.pos_neg_mask == 1))
-            neg = np.sum((self.masks==clust) * (self.pos_neg_mask == -1))
+            pos = np.sum((self.masks == clust) * (self.pos_neg_mask == 1))
+            neg = np.sum((self.masks == clust) * (self.pos_neg_mask == -1))
             pos_ratio = pos / (pos + neg)
             neg_ratio = neg / (pos + neg)
 
@@ -156,10 +160,10 @@ class Paint(object):
                 continue
 
             self.centroids = np.delete(self.centroids, clust, axis=0)
-            neg_centroid = self.x[0][((self.masks == clust) * (self.pos_neg_mask == -1))].mean(axis=0).reshape(1,
-                                                                                                self.centroids.shape[1])
-            pos_centroid = self.x[0][((self.masks == clust) * (self.pos_neg_mask == 1))].mean(axis=0).reshape(1,
-                                                                                               self.centroids.shape[1])
+            neg_centroid = self.x[0][((self.masks == clust) *
+                                      (self.pos_neg_mask == -1))].mean(axis=0).reshape(1, self.centroids.shape[1])
+            pos_centroid = self.x[0][((self.masks == clust) *
+                                      (self.pos_neg_mask == 1))].mean(axis=0).reshape(1, self.centroids.shape[1])
 
             self.centroids = np.concatenate((self.centroids, neg_centroid, pos_centroid), axis=0)
 
@@ -187,21 +191,25 @@ class Paint(object):
         pos_arr = np.zeros(self.masks.shape)
         pos_arr[np.isin(self.masks, pos_clusts)] = 1
         for clust in intersect:
-            pos = np.sum((self.masks==clust) * (self.pos_neg_mask == 1))
-            neg = np.sum((self.masks==clust) * (self.pos_neg_mask == -1))
+            pos = np.sum((self.masks == clust) * (self.pos_neg_mask == 1))
+            neg = np.sum((self.masks == clust) * (self.pos_neg_mask == -1))
             pos_ratio = pos / (pos + neg)
 
             if pos_ratio < 0.3:
-                pos_arr[self.masks==clust] = 0
+                pos_arr[self.masks == clust] = 0
 
-        skimage.io.imsave('/home/zhygallo/zhygallo/inria/cluster_seg/deepcluster_segmentation/data/patches_512_lux/full_pred/pos_%i.png'%self.count, np.isin(self.masks, pos_clusts))
-        skimage.io.imsave('/home/zhygallo/zhygallo/inria/cluster_seg/deepcluster_segmentation/data/patches_512_lux/full_pred/only_pos_%i.png' % self.count,
+        # np.save('/home/zhygallo/zhygallo/zeiss/clusternet_segmentation/data/pos_arr.npy', pos_clusts)
+
+        skimage.io.imsave(
+            '/home/zhygallo/zhygallo/zeiss/clusternet_segmentation/data/binar_pred/pos_%i.png' % self.count,
+            np.isin(self.masks, pos_clusts))
+        skimage.io.imsave(
+            '/home/zhygallo/zhygallo/zeiss/clusternet_segmentation/data/binar_pred/only_pos_%i.png' % self.count,
             np.isin(self.masks, pos_clusts) * (1 - np.isin(self.masks, neg_clusts)))
         skimage.io.imsave(
-            '/home/zhygallo/zhygallo/inria/cluster_seg/deepcluster_segmentation/data/patches_512_lux/full_pred/filt_pos_%i.png' % self.count,
+            '/home/zhygallo/zhygallo/zeiss/clusternet_segmentation/data/binar_pred/filt_pos_%i.png' % self.count,
             pos_arr.astype('uint16'))
         self.count += 1
-
 
 
 def main():
