@@ -7,7 +7,13 @@ Neural Network. This approach is generic and can be applied to any image and to 
 class of objects on that image. At the same time, it does not require the ground-truth
 during the training stage.
 
-
+Official code for the paper:
+**ClusterNet: Unsupervised Generic Feature Learning for Fast Interactive Satellite Image Segmentation**\
+[Nicolas Girard](https://www-sop.inria.fr/members/Nicolas.Girard/),
+[Andrii Zhygallo](https://www.linkedin.com/in/andrii-zhygallo/),
+[Yuliya Tarabalka](https://www-sop.inria.fr/members/Yuliya.Tarabalka/)\
+Image and Signal Processing for Remote Sensing (SPIE), Strasbourg, France, 2019\
+**\[[paper](https://www-sop.inria.fr/members/Nicolas.Girard/pdf/Girard_2019_SPIE_paper.pdf), [slides](https://www-sop.inria.fr/members/Nicolas.Girard/pdf/Girard_2019_SPIE_slides.pdf)\]**
 
 ### Prerequisites
 
@@ -44,4 +50,12 @@ python ./main.py <input_patches_path>
 *Deep Clustering for Unsupervised Learning of Visual Features* - [DeepCluster](https://github.com/facebookresearch/deepcluster)
 
 
-
+## If you use this code for your own research, please cite:
+```
+@InProceedings{ClusterNet_2019_SPIE,
+author = {Girard, Nicolas and Zhygallo, Andrii and Tarabalka, Yuliya},
+title = {ClusterNet: Unsupervised Generic Feature Learning for Fast Interactive Satellite Image Segmentation},
+booktitle = {Image and Signal Processing for Remote Sensing (SPIE)},
+year = {2019}
+}
+```
