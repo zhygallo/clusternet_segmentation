@@ -43,7 +43,7 @@ python-dateutil==2.7.3
 python-utils==2.3.0
 pytz==2018.5
 PyWavelets==1.0.0
-PyYAML==3.13
+PyYAML==5.4
 rasterio==1.0.4
 requests==2.19.1
 scikit-image==0.14.0
