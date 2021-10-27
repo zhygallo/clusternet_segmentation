@@ -9,7 +9,7 @@ click-plugins==1.0.4
 cligj==0.4.0
 cloudpickle==0.5.6
 cycler==0.10.0
-dask==0.19.2
+dask==2021.10.0
 decorator==4.3.0
 faiss==1.4.0
 Fiona==1.7.13
