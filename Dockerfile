@@ -1,35 +1,34 @@
-FROM nvidia/cuda:9.0-cudnn7-devel-ubuntu16.04
+# NOTE: May need adjustment for your specific GPU/CUDA setup
+FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04
 
 ARG FAISS_CPU_OR_GPU=cpu
-ARG FAISS_VERSION=1.4.0
+ARG PYTHON_VERSION=3.10
 
-ENV HOME /root
+ENV HOME=/root
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
-    apt-get install -y build-essential curl software-properties-common bzip2 python3-pip  && \
-    curl https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh > /tmp/conda.sh && \
+    apt-get install -y --no-install-recommends \
+        build-essential curl software-properties-common bzip2 \
+        python3 python3-pip gdal-bin libgdal-dev && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Miniconda for FAISS
+RUN curl -fsSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh > /tmp/conda.sh && \
     bash /tmp/conda.sh -b -p /opt/conda && \
     /opt/conda/bin/conda update -n base conda && \
-    /opt/conda/bin/conda install -y -c pytorch faiss-${FAISS_CPU_OR_GPU}=${FAISS_VERSION} && \
-    apt-get remove -y --auto-remove curl bzip2 && \
-    apt-get clean && \
-    rm -fr /tmp/conda.sh
+    /opt/conda/bin/conda install -y -c pytorch faiss-${FAISS_CPU_OR_GPU} && \
+    rm /tmp/conda.sh
 
-#RUN /opt/conda/bin/conda install -c conda-forge tensorflow-gpu \
-#                                                keras \
-#                                                scikit-image \
-#                                                click
-
-RUN /opt/conda/bin/pip install sklearn \
-                                scikit-image \
-                                click \
-                                pandas \
-                                tensorflow-gpu==1.11.0 \
-                                Keras==2.2.2 \
-                                Keras-Applications==1.0.4 \
-                                Keras-Preprocessing==1.0.2
+# Install Python dependencies
+COPY requirements.txt /tmp/requirements.txt
+RUN /opt/conda/bin/pip install --no-cache-dir -r /tmp/requirements.txt && \
+    rm /tmp/requirements.txt
 
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
-
 ENV PATH="/opt/conda/bin:${PATH}"
+
+WORKDIR /workspace
+COPY . /workspace

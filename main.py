@@ -1,7 +1,3 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import numpy as np
 import click
 import os
@@ -87,8 +83,6 @@ def main(train_img_folder, test_img_folder, img_shape, num_clusters, num_epochs,
     before_last_layer_model = Model(inputs=model.input, outputs=model.get_layer('for_clust').output)
 
     if pretrained_weights != '':
-    #     for layer in model.layers[-1:]:
-    #         layer.name += '_lux'
         model.load_weights(pretrained_weights, by_name=True)
 
     deepcluster = clustering.Kmeans(num_clusters)
@@ -119,7 +113,7 @@ def main(train_img_folder, test_img_folder, img_shape, num_clusters, num_epochs,
 
             print('Training:')
 
-            model.compile(optimizer=Adam(lr=(learn_rate)), loss=losses, loss_weights=loss_weights)
+            model.compile(optimizer=Adam(learning_rate=learn_rate), loss=losses, loss_weights=loss_weights)
             model.fit(images_batch, masks, batch_size=train_batch_size, epochs=1, verbose=1)
 
         if out_pred_masks_test != '':

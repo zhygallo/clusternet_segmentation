@@ -1,8 +1,4 @@
 """Keras implementation of UNet model"""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import math
 from keras.models import Model
 from keras.layers import Input, Conv2D, UpSampling2D, Concatenate, Cropping2D, BatchNormalization, Activation, MaxPooling2D

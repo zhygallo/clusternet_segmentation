@@ -1,8 +1,4 @@
 """Keras implementation of UNet model"""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import math
 from keras.models import Model
 from keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D, Concatenate, Cropping2D
@@ -71,9 +67,6 @@ def get_model(img_shape, num_classes=2):
     conv9_2 = Conv2D(64, 3, activation='relu', padding='valid', kernel_initializer='he_normal', name='for_clust')(conv9_1)
 
     conv10 = Conv2D(num_classes, (1, 1), activation='softmax', name='clust_output')(conv9_2)
-
-    # conv11 = Conv2D(2, (1, 1), activation='softmax', name='rgb_output')(conv9_2)
-
 
     model = Model(inputs=inputs, outputs=[conv10])
 

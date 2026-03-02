@@ -1,64 +1,35 @@
-absl-py
-affine
-astor
-attrs
-certifi
-chardet
-click
-click-plugins
-cligj
-cloudpickle
-cycler
-dask
-decorator
-faiss
-Fiona
-gast
-grpcio
-h5py
-idna
-imageio
+# Deep learning
 Keras==2.2.2
-Keras-Applications==1.0.6
-Keras-Preprocessing==1.0.5
-kiwisolver
-lxml
-Markdown
-matplotlib
-mkl-fft
-mkl-random
-munch
-networkx
-numpy
-opencv-python
-pandas
-Pillow
-progressbar2
-protobuf
-pydensecrf
-PyGraph
-PyMaxflow
-pyparsing
-python-dateutil
-python-utils
-pytz
-PyWavelets
-PyYAML
-rasterio
-requests
+tensorflow>=1.11.0,<2.0
+h5py
+
+# Clustering (FAISS must be installed via conda, see README)
+# conda install -c pytorch faiss-cpu  OR  faiss-gpu
+
+# Image processing
 scikit-image
-scikit-learn
-scipy
+opencv-python
+Pillow
+
+# Geospatial
+rasterio
+Fiona
 Shapely
-six
-sklearn
-snuggs
-tensorboard
-tensorflow
-tensorlayer
-termcolor
-toolz
+geopandas
+
+# Scientific computing
+numpy
+scipy
+scikit-learn
+pandas
+matplotlib
+
+# CLI
+click
+
+# Progress bars
 tqdm
-urllib3
-Werkzeug
-wrapt
+progressbar2
+
+# CRF post-processing
+pydensecrf

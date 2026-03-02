@@ -1,8 +1,4 @@
 """Keras implementation of UNet model"""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import math
 from keras.models import Model
 from keras.layers import Conv2D, UpSampling2D, Concatenate, Cropping2D, BatchNormalization, Activation, MaxPooling2D
@@ -33,7 +29,6 @@ def get_model(img_shape, num_classes=2):
     batch4_2 = BatchNormalization()(conv4_2)
     act4_2 = Activation('relu')(batch4_2)
 
-    # up5 = UpSampling2D(size=(2, 2))(act4_2)
     up5 = Conv2D(256, 2, activation='relu', padding='valid')(
         UpSampling2D(size=(2, 2))(act4_2))
     height_dif = int((skip1.shape[1] - up5.shape[1])) / 2
@@ -48,7 +43,6 @@ def get_model(img_shape, num_classes=2):
     batch5_2 = BatchNormalization()(conv5_2)
     act5_2 = Activation('relu')(batch5_2)
 
-    # up6 = UpSampling2D(size=(2, 2))(act5_2)
     up6 = Conv2D(128, 2, activation='relu', padding='valid')(
         UpSampling2D(size=(2, 2))(act5_2))
     height_dif = int((skip2.shape[1] - up6.shape[1])) / 2
@@ -78,8 +72,6 @@ def get_model(img_shape, num_classes=2):
     act7_2 = Activation('relu', name='for_clust')(batch7_2)
 
     conv8 = Conv2D(num_classes, (1, 1), activation='softmax', name='clust_output')(act7_2)
-
-    # conv9 = Conv2D(3, (1, 1), activation='sigmoid', name='rgb_output')(act7_2)
 
     model = Model(inputs=class_model.inputs, outputs=[conv8])
 

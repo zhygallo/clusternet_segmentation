@@ -1,7 +1,3 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import numpy as np
 import click
 import os
@@ -48,8 +44,6 @@ def main(train_img_folder, train_mask_folder, test_img_folder, test_mask_folder,
         test_img_folder += '/'
 
     train_image_datagen = ImageDataGenerator(
-        # featurewise_center=True,
-        # featurewise_std_normalization=True,
         rescale=1./255,
         data_format='channels_last',
         preprocessing_function=crop_center
@@ -57,13 +51,7 @@ def main(train_img_folder, train_mask_folder, test_img_folder, test_mask_folder,
 
     train_mask_datagen = ImageDataGenerator(
         rescale=1. / 255,
-        # featurewise_center=True,
-        # featurewise_std_normalization=True,
     )
-
-    # (512, 512) lux
-    # train_image_datagen.mean = np.array([11.4296465, 13.140564, 12.277675], dtype=np.float32).reshape(1, 1, 3)
-    # train_image_datagen.std = np.array([27.561337, 29.903225, 29.525864], dtype=np.float32).reshape(1, 1, 3)
 
     SEED = 1
     train_image_gen = train_image_datagen.flow_from_directory(train_img_folder,
@@ -76,14 +64,11 @@ def main(train_img_folder, train_mask_folder, test_img_folder, test_mask_folder,
     train_mask_gen = train_mask_datagen.flow_from_directory(train_mask_folder,
                                                             target_size=out_img_shape,
                                                             batch_size=batch_size,
-                                                            # color_mode='grayscale',
                                                             class_mode=None,
                                                             shuffle=True,
                                                             seed=SEED)
 
     test_image_datagen = ImageDataGenerator(
-        # featurewise_center=True,
-        # featurewise_std_normalization=True,
         rescale=1. / 255,
         data_format='channels_last',
         preprocessing_function=crop_center
@@ -94,15 +79,10 @@ def main(train_img_folder, train_mask_folder, test_img_folder, test_mask_folder,
                                                             class_mode=None,
                                                             shuffle=False)
 
-    # test_image_datagen.mean = train_image_datagen.mean
-    # test_image_datagen.std = train_image_datagen.mean
-
     model = get_model(train_image_gen.image_shape, num_classes=num_classes)
-    model.compile(optimizer=Adam(lr=(learn_rate)), loss='mse')
+    model.compile(optimizer=Adam(learning_rate=learn_rate), loss='mse')
 
     if pretrained_weights != '':
-        # for layer in model.layers[-2:]:
-        #     layer.name += '_lux'
         model.load_weights(pretrained_weights, by_name=True)
 
     callback_list = []
@@ -116,7 +96,6 @@ def main(train_img_folder, train_mask_folder, test_img_folder, test_mask_folder,
         for i in range(steps_train_epoch):
             train_img_batch = train_image_gen[i]
             train_mask_batch = train_mask_gen[i]
-            # train_mask_batch = to_categorical(train_mask_gen[i], num_classes)
 
             model.fit(train_img_batch, train_mask_batch, batch_size=8, epochs=1,
                       callbacks=callback_list, verbose=1)

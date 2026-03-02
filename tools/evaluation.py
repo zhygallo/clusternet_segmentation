@@ -1,7 +1,3 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import click
 import os
 import scipy.spatial
@@ -80,7 +76,6 @@ def evaluate_per_epoch():
     out_figure = 'data/patches_512_lux/figure_%s.png' % test
 
     if in_result_dict == '':
-        # in_gt_train_fold = 'data/patches_512_lux/gt_masks/train_masks'
         in_gt_train_fold = 'data/patches_512_lux/gt_masks/test_masks'
         in_gt_test_fold = 'data/patches_512_lux/gt_masks/%s_masks' % test
         in_pred_clust_fold = 'data/patches_512_lux/pred_masks'
@@ -99,8 +94,6 @@ def evaluate_per_epoch():
             epoch_dirpath = os.path.join(in_pred_clust_fold, epoch_dir)
             epoch_test_dirpath = os.path.join(epoch_dirpath)
             epoch_train_dirpath = os.path.join(epoch_dirpath)
-            # epoch_test_dirpath = os.path.join(epoch_dirpath, test)
-            # epoch_train_dirpath = os.path.join(epoch_dirpath, 'train')
 
             epoch_out_fold = os.path.join(out_fold_final_preds, epoch_dir)
             if not os.path.isdir(epoch_out_fold):
@@ -128,7 +121,6 @@ def evaluate_per_epoch():
 
     fig, ax = plt.subplots(nrows=1, ncols=1)
     ax.plot('epochs', 'dice', data=df, marker='o', markerfacecolor='black', color='blue', linewidth=4)
-    # ax.plot('epochs', 'accuracy', data=df, marker='o', markerfacecolor='black', color='green', linewidth=4)
     ax.set_xlabel('Epochs')
     ax.set_ylabel('Dice')
     fig.savefig(out_figure)

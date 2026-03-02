@@ -1,18 +1,40 @@
-*.pyc
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+venv/
+.env/
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+
+# Data files
+data/
 *.npy
 *.csv
 *.hdf5
 *.h5
-*.png
-*.json
 *.gz
 *.tar
 *.tif
 *.tiff
 *.shp
 *.xml
-*.jpg
 *.tfrecords
+*.json
+
+# Images (except assets/ for README)
+*.png
+*.jpg
+*.jpeg
 *.JPEG
-.idea/*
-data/*
+!assets/*.png
+!assets/*.jpg

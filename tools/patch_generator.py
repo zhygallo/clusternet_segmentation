@@ -1,16 +1,9 @@
 """Script for generating patches"""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import os
 import click
 import skimage.io
 import skimage.util
 import numpy as np
-
-# mean = np.array([11.4296465, 13.140564, 12.277675], dtype=np.float32).reshape(1, 1, 3)
-# std = np.array([27.561337, 29.903225, 29.525864], dtype=np.float32).reshape(1, 1, 3)
 
 def get_patches(input_fold, output_folder='', output_np_folder='', masks_folder='',
                 patch_shape=(512, 512), crop_shape=None, stride=(100, 100), keep_dark_region_ratio=0.01):
@@ -71,10 +64,8 @@ def get_patches(input_fold, output_folder='', output_np_folder='', masks_folder=
 
             if masks_folder != '':
                 mask_file = os.path.join(masks_folder, file.split('.')[0] + '_mask.' + file.split('.')[-1])
-                # mask_file = os.path.join(masks_folder, file.split('.')[0] + '.' + file.split('.')[-1])
                 assert os.path.isfile(mask_file)
                 full_mask = skimage.io.imread(mask_file)
-                # assert full_img.shape[0] == full_mask.shape[0] and full_img.shape[1] == full_mask.shape[1]
 
             for row in range(0, full_img.shape[0] - patch_shape[0], stride[0]):
                 for col in range(0, full_img.shape[1] - patch_shape[1], stride[1]):

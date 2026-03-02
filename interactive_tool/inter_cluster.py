@@ -1,9 +1,6 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import skimage.io
 import numpy as np
+import click
 from keras import Model
 from tkinter import *
 from PIL import ImageTk, Image
@@ -12,21 +9,24 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 import matplotlib.image as mpimg
-import skimage.io
 
 from models.UNetValid import get_model
 from utils import clustering
 
-img_path = '/home/zhygallo/zhygallo/zeiss/clusternet_segmentation/data/crop_img.png'
-
 
 class Paint(object):
 
-    def __init__(self):
+    def __init__(self, display_img_path, input_img_path, model_weights_path, output_dir,
+                 num_clusters=100):
+        self.input_img_path = input_img_path
+        self.model_weights_path = model_weights_path
+        self.output_dir = output_dir
+        self.num_clusters = num_clusters
+
         self.root = Tk()
         self.mask_clust = Toplevel()
 
-        self.img_np = skimage.io.imread(img_path)
+        self.img_np = skimage.io.imread(display_img_path)
         img = Image.fromarray(self.img_np)
         self.img = ImageTk.PhotoImage(image=img)
         frame = Frame(self.root, width=self.img.width(), height=self.img.height())
@@ -42,9 +42,6 @@ class Paint(object):
         self.canvas.config(width=512, height=512)
         self.canvas.config(xscrollcommand=hbar.set, yscrollcommand=vbar.set)
         self.canvas.pack(side=LEFT, expand=True, fill=BOTH)
-
-        # self.c = Canvas(self.root, bg='black', width=self.img.width(), height=self.img.height())
-        # self.c.grid(row=1, columnspan=5)
 
         self.done_button = Button(self.root, text='DONE', command=self.done)
         self.done_button.grid(row=0, column=1)
@@ -68,31 +65,22 @@ class Paint(object):
         self.old_x = None
         self.old_y = None
 
-        self.num_clusters = 100
-
-        model_weights_path = '/home/zhygallo/zhygallo/zeiss/clusternet_segmentation/data/results/38/model.h5'
-        img_path = '/home/zhygallo/zhygallo/zeiss/clusternet_segmentation/data/raw/test/images/JNCASR_Overall_Inducer_123_Folder_F_30_ebss_07_R3D_D3D_PRJ.png'
-        self.image = skimage.io.imread(img_path).astype('float32')
+        self.image = skimage.io.imread(self.input_img_path).astype('float32')
 
         self.image = np.expand_dims(self.image, -1)
-        # mean = np.array([9.513245, 10.786118, 10.060172], dtype=np.float32).reshape(1, 1, 3)
-        # std = np.array([18.76071, 19.97462, 19.616455], dtype=np.float32).reshape(1, 1, 3)
         mean = np.array([30.17722], dtype='float32').reshape(1, 1, 1)
         std = np.array([33.690296], dtype='float32').reshape(1, 1, 1)
         self.image -= mean
         self.image /= std
-        # self.image /= 255
 
         self.model = get_model(self.image.shape, self.num_clusters)
-        self.model.load_weights(model_weights_path)
+        self.model.load_weights(self.model_weights_path)
 
         before_last_layer_model = Model(inputs=self.model.input, outputs=self.model.get_layer('for_clust').output)
 
         self.x = before_last_layer_model.predict(np.expand_dims(self.image, axis=0), verbose=1, batch_size=1)
 
         self.pos_neg_mask = np.zeros((self.x.shape[1], self.x.shape[2]))
-        # self.pos_neg_mask = np.load(
-        #     '/home/zhygallo/zhygallo/inria/cluster_seg/deepcluster_segmentation/data/patches_512_lux/pos_neg_mask.npy')
         self.x_flat = np.reshape(self.x, (self.x.shape[0] * self.x.shape[1] * self.x.shape[2], self.x.shape[-1]))
 
         self.n_pix, self.dim_pix = self.x_flat.shape[0], self.x_flat.shape[1]
@@ -106,9 +94,9 @@ class Paint(object):
         self.masks = masks_flat.reshape((self.x.shape[1], self.x.shape[2]))
 
         self.count = 1
-        skimage.io.imsave(
-            '/home/zhygallo/zhygallo/zeiss/clusternet_segmentation/data/binar_pred/clust_%i.png' % self.count,
-            self.masks.astype('uint32'))
+        import os
+        clust_path = os.path.join(self.output_dir, 'clust_%i.png' % self.count)
+        skimage.io.imsave(clust_path, self.masks.astype('uint32'))
         self.subplot_mask.imshow(self.masks)
         self.canvas.create_image(0, 0, image=self.img, anchor=NW)
 
@@ -143,8 +131,8 @@ class Paint(object):
         self.old_x, self.old_y = None, None
 
     def done(self):
-        np.save('/home/zhygallo/zhygallo/zeiss/clusternet_segmentation/data/pos_neg_mask_transfer.npy',
-                self.pos_neg_mask)
+        import os
+        np.save(os.path.join(self.output_dir, 'pos_neg_mask_transfer.npy'), self.pos_neg_mask)
         pos_clusts = np.unique(self.masks[self.pos_neg_mask == 1])
         neg_clusts = np.unique(self.masks[self.pos_neg_mask == -1])
 
@@ -198,22 +186,27 @@ class Paint(object):
             if pos_ratio < 0.3:
                 pos_arr[self.masks == clust] = 0
 
-        # np.save('/home/zhygallo/zhygallo/zeiss/clusternet_segmentation/data/pos_arr.npy', pos_clusts)
-
         skimage.io.imsave(
-            '/home/zhygallo/zhygallo/zeiss/clusternet_segmentation/data/binar_pred/pos_%i.png' % self.count,
+            os.path.join(self.output_dir, 'pos_%i.png' % self.count),
             np.isin(self.masks, pos_clusts))
         skimage.io.imsave(
-            '/home/zhygallo/zhygallo/zeiss/clusternet_segmentation/data/binar_pred/only_pos_%i.png' % self.count,
+            os.path.join(self.output_dir, 'only_pos_%i.png' % self.count),
             np.isin(self.masks, pos_clusts) * (1 - np.isin(self.masks, neg_clusts)))
         skimage.io.imsave(
-            '/home/zhygallo/zhygallo/zeiss/clusternet_segmentation/data/binar_pred/filt_pos_%i.png' % self.count,
+            os.path.join(self.output_dir, 'filt_pos_%i.png' % self.count),
             pos_arr.astype('uint16'))
         self.count += 1
 
 
-def main():
-    Paint()
+@click.command()
+@click.argument('display_img_path', type=click.STRING)
+@click.argument('input_img_path', type=click.STRING)
+@click.argument('model_weights_path', type=click.STRING)
+@click.argument('output_dir', type=click.STRING)
+@click.option('--num_clusters', type=click.INT, default=100)
+def main(display_img_path, input_img_path, model_weights_path, output_dir, num_clusters):
+    Paint(display_img_path, input_img_path, model_weights_path, output_dir,
+          num_clusters=num_clusters)
 
 
 if __name__ == "__main__":

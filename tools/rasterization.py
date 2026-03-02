@@ -1,8 +1,4 @@
 """Script for generating rasterized masks from shapefiles"""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import rasterio
 from rasterio import features
 import geopandas as gpd
@@ -68,8 +64,8 @@ def main(input_shp, ref_tif, output_tif):
     for file in files:
         input_shp_path = os.path.join(input_shp, file)
         ref_tif_path = os.path.join(ref_tif, file.split('.')[0]+'.tif')
-        output_tif_paht = os.path.join(output_tif, file.split('.')[0]+'.tif')
-        get_rasterization(input_shp=input_shp_path, meta_data=meta_data, ref_tif=ref_tif_path, output_tif=output_tif_paht)
+        output_tif_path = os.path.join(output_tif, file.split('.')[0]+'.tif')
+        get_rasterization(input_shp=input_shp_path, meta_data=meta_data, ref_tif=ref_tif_path, output_tif=output_tif_path)
 
 
 if __name__ == '__main__':
