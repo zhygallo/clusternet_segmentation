@@ -12,6 +12,7 @@ venv/
 # IDE
 .idea/
 .vscode/
+.jbeval/
 
 # OS
 .DS_Store
